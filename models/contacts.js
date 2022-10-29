@@ -32,7 +32,7 @@ const removeContact = async (contactId) => {
     return null;
   }
   const [removeContact] = contacts.splice(idx, 1);
-  renewContacts(contacts);
+  await renewContacts(contacts);
   return removeContact;
 };
 
@@ -45,7 +45,7 @@ const addContact = async ({ name, email, phone }) => {
   };
   const contacts = await listContacts();
   contacts.push(newContact);
-  renewContacts(contacts);
+  await renewContacts(contacts);
   return newContact;
 };
 
@@ -57,7 +57,7 @@ const updateContact = async (contactId, body) => {
   }
   const contact = contacts[idx];
   contacts[idx] = { ...contact, ...body };
-  renewContacts(contacts);
+  await renewContacts(contacts);
   return contacts[idx];
 };
 

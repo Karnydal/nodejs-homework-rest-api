@@ -1,61 +1,23 @@
+
 const express = require("express");
-const contactsOperation = require("../../models/contacts");
-const { addSchema, updateSchema } = require("../../schema/contacts");
+const { validation, ctrlWrapper } = require("../../midlleWares/midlleWares");
+const { contactSchema } = require("../../schema/contacts");
+const { contacts: ctrl } = require("../../controllers");
 const router = express.Router();
+const validateMiddleWareUpdate = validation(contactSchema, "Missing field");
+const validateMiddleWareAdd = validation(
+  contactSchema,
+  "Missing required name field"
+);
 
-router.get("/", async (req, res, next) => {
-  const contacts = await contactsOperation.listContacts();
-  console.log(contacts);
-  res.json(contacts);
-});
-
-router.get("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params;
-  const result = await contactsOperation.getContactById(contactId);
-  if (!result) {
-    res.status(404).json({ message: "Not found" });
-    return;
-  }
-  res.json(result);
-});
-
-router.post("/", async (req, res, next) => {
-  const { error } = addSchema.validate(req.body);
-  console.log(error);
-  console.log(req.body);
-  if (error) {
-    res.status(400).json({ message: "missing fields" });
-    return;
-  }
-  const result = await contactsOperation.addContact(req.body);
-  res.status(201).json(result);
-});
-
-router.delete("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params;
-  const result = await contactsOperation.removeContact(contactId);
-  if (!result) {
-    res.status(404).json({ message: "Not found" });
-    return;
-  }
-  res.json({ message: "Contact deleted" });
-});
-
-router.put("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params;
-  const { error } = updateSchema.validate(req.body);
-  const isEmpty = Object.keys(req.body).length === 0;
-  console.log(isEmpty);
-  if (isEmpty || error) {
-    res.status(400).json({ message: "Missing fields" });
-    return;
-  }
-  const result = await contactsOperation.updateContact(contactId, req.body);
-  if (!result) {
-    res.status(400).json({ message: "Not found" });
-    return;
-  }
-  res.json(result);
-});
+router.get("/", ctrlWrapper(ctrl.getAll));
+router.get("/:contactId", ctrlWrapper(ctrl.getById));
+router.post("/", validateMiddleWareAdd, ctrlWrapper(ctrl.add));
+router.delete("/:contactId", ctrlWrapper(ctrl.removeById));
+router.put(
+  "/:contactId",
+  validateMiddleWareUpdate,
+  ctrlWrapper(ctrl.updateById)
+);
 
 module.exports = router;

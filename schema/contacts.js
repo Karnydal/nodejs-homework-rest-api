@@ -1,19 +1,32 @@
-const { string } = require("joi");
 const Joi = require("joi");
 
-const addSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  phone: Joi.string().required(),
-});
-
-const updateSchema = Joi.object({
-  name: string().required(),
-  email: string().required(),
-  phone: string().required(),
+const contactSchema = Joi.object({
+  name: Joi.string().alphanum().min(3).required(),
+  email: Joi.string().email().required(),
+  phone: Joi.number().integer().required(),
 });
 
 module.exports = {
-  addSchema,
-  updateSchema,
+  contactSchema,
 };
+
+
+
+
+
+// const addSchema = Joi.object({
+//   name: Joi.string().alphanum().min(3).required(),
+//   email: Joi.string().email().required(),
+//   phone: Joi.string().integer().required(),
+// });
+
+// const updateSchema = Joi.object({
+//   name: Joi.string().alphanum().min(3).required(),
+//   email: Joi.string().email().required(),
+//   phone: Joi.string().integer().required(),
+// });
+
+// module.exports = {
+//   addSchema,
+//   updateSchema,
+// };
