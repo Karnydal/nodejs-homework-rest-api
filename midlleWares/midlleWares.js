@@ -1,5 +1,3 @@
-const { BadRequest } = require("http-errors");
-
 const ctrlWrapper = (ctrl) => {
   return async (req, res, next) => {
     try {
@@ -10,11 +8,12 @@ const ctrlWrapper = (ctrl) => {
   };
 };
 
-const validation = (schema, errorMessage) => {
+const validation = (schema) => {
   return (req, res, next) => {
     const { error } = schema.validate(req.body);
     if (error) {
-      throw new BadRequest(errorMessage);
+      error.status = 400;
+      next(error);
     }
     next();
   };
