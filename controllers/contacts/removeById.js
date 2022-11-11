@@ -1,4 +1,4 @@
-const { Contact } = require("../../models/index");
+const { Contact } = require("../../models");
 const { NotFound } = require("http-errors");
 
 const removeById = async (req, res, next) => {
