@@ -3,15 +3,9 @@ const { validation, ctrlWrapper, auth } = require("../../middlewares");
 const { users: ctrl } = require("../../controllers");
 const { userSchema, userStatusSchema } = require("../../models");
 
-const validateMiddlwarePost = validation(
-  userSchema,
-  "Помилка від Joi або іншої бібліотеки валідації"
-);
+const validateMiddlwarePost = validation(userSchema);
 
-const validateMiddlwarePatch = validation(
-  userStatusSchema,
-  "Помилка від Joi або іншої бібліотеки валідації"
-);
+const validateMiddlwarePatch = validation(userStatusSchema);
 
 const router = express.Router();
 
@@ -20,7 +14,7 @@ router.post("/login", validateMiddlwarePost, ctrlWrapper(ctrl.login));
 router.get("/logout", auth, ctrlWrapper(ctrl.logout));
 router.get("/current", auth, ctrlWrapper(ctrl.getCurrent));
 router.patch(
-  "/",
+  "/subscription",
   auth,
   validateMiddlwarePatch,
   ctrlWrapper(ctrl.updateStatusUser)
