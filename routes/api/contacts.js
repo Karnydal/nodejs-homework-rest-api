@@ -1,30 +1,32 @@
 const express = require("express");
-const { validation, ctrlWrapper } = require("../../midlleWares/midlleWares");
-const { contactSchema, favoriteContactSchema } = require("../../models/index");
+const { validation, ctrlWrapper, auth } = require("../../middlewares");
+const { contactSchema, favoriteContactSchema } = require("../../models");
 const { contacts: ctrl } = require("../../controllers");
 const router = express.Router();
-const validateMiddleWareUpdate = validation(contactSchema, "Missing field");
-const validateMiddleWareAdd = validation(
+const validateMiddlwareAdd = validation(
   contactSchema,
-  "Missing required name field"
+  "missing required name field"
 );
-const validateMiddleWarePatch = validation(
+const validateMiddlwarePatch = validation(
   favoriteContactSchema,
-  "Missing field favorite"
+  "missing field favorite"
 );
+const validateMiddlwareUpdate = validation(contactSchema, "missing field");
 
-router.get("/", ctrlWrapper(ctrl.getAll));
-router.get("/:contactId", ctrlWrapper(ctrl.getById));
-router.post("/", validateMiddleWareAdd, ctrlWrapper(ctrl.add));
-router.delete("/:contactId", ctrlWrapper(ctrl.removeById));
+router.get("/", auth, ctrlWrapper(ctrl.getAll));
+router.get("/:contactId", auth, ctrlWrapper(ctrl.getById));
+router.post("/", auth, validateMiddlwareAdd, ctrlWrapper(ctrl.add));
+router.delete("/:contactId", auth, ctrlWrapper(ctrl.removeById));
 router.put(
   "/:contactId",
-  validateMiddleWareUpdate,
+  auth,
+  validateMiddlwareUpdate,
   ctrlWrapper(ctrl.updateById)
 );
 router.patch(
   "/:contactId/favorite",
-  validateMiddleWarePatch,
+  auth,
+  validateMiddlwarePatch,
   ctrlWrapper(ctrl.updateStatusContact)
 );
 
