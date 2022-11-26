@@ -1,9 +1,15 @@
 const express = require("express");
 const { validation, ctrlWrapper, auth, upload } = require("../../middlewares");
 const { users: ctrl } = require("../../controllers");
-const { userSchema, userStatusSchema } = require("../../models");
+const {
+  userSchema,
+  userStatusSchema,
+  verifyEmailSchema,
+} = require("../../models");
 
 const validateMiddlwarePost = validation(userSchema);
+
+const validateMiddlwarePostEmail = validation(verifyEmailSchema);
 
 const validateMiddlwarePatch = validation(userStatusSchema);
 
@@ -13,6 +19,12 @@ router.post("/register", validateMiddlwarePost, ctrlWrapper(ctrl.register));
 router.post("/login", validateMiddlwarePost, ctrlWrapper(ctrl.login));
 router.get("/logout", auth, ctrlWrapper(ctrl.logout));
 router.get("/current", auth, ctrlWrapper(ctrl.getCurrent));
+router.get("/verify/:verificationToken", ctrlWrapper(ctrl.verifyEmail));
+router.post(
+  "/verify",
+  validateMiddlwarePostEmail,
+  ctrlWrapper(ctrl.resendVerifyEmail)
+);
 router.patch(
   "/subscription",
   auth,
